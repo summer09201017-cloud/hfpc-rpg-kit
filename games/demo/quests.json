@@ -1,0 +1,20 @@
+{
+  "q_slime": {
+    "title": "清除綠團子",
+    "desc": "幫村長打倒草原上的 3 隻綠團子。",
+    "objective": { "type": "kill", "enemy": "blob", "count": 3 },
+    "reward": { "xp": 15, "gold": 30, "items": { "potion": 1 } }
+  },
+  "q_herb": {
+    "title": "採集藥草",
+    "desc": "幫藥草師艾拉採 2 株藥草(草原上撿,野狼也會掉)。",
+    "objective": { "type": "collect", "item": "herb", "count": 2 },
+    "reward": { "xp": 20, "gold": 20, "items": { "hipotion": 2 } }
+  },
+  "q_boss": {
+    "title": "洞窟巨蛛",
+    "desc": "進入北邊洞窟,打倒巨蛛,再回來向村長回報。",
+    "objective": { "type": "kill", "enemy": "spider", "count": 1 },
+    "reward": { "xp": 100, "gold": 200 }
+  }
+}

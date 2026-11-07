@@ -1,0 +1,17 @@
+{
+  "name": "hfpc-rpg-kit",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "資料驅動的俯視回合制 RPG 套件:engine/ 是遊戲機,games/<名>/ 是卡帶",
+  "scripts": {
+    "validate": "node scripts/validate-game.mjs games/demo",
+    "test": "node scripts/validate-game.mjs games/demo && node --test tests/*.test.mjs",
+    "e2e": "node scripts/e2e.mjs",
+    "verify": "npm test && npm run e2e",
+    "serve": "node scripts/serve.mjs"
+  },
+  "devDependencies": {
+    "playwright": "1.63.0"
+  }
+}

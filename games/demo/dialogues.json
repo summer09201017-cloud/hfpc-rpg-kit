@@ -1,0 +1,104 @@
+{
+  "elder": [
+    { "if": "quest:q_boss=done", "then": "elder_end" },
+    { "if": "quest:q_boss=active", "then": "elder_wait_boss" },
+    { "if": "quest:q_slime=done", "then": "elder_after" },
+    { "if": "quest:q_slime=ready", "then": "elder_done" },
+    { "if": "quest:q_slime=active", "then": "elder_wait" },
+    { "speaker": "村長", "text": "{hero},你來得正好。草原上的綠團子越來越多,孩子們都不敢出去玩了。" },
+    { "text": "能幫我們打倒 3 隻綠團子嗎?", "choices": [ { "label": "交給我吧!", "next": "elder_yes" }, { "label": "我再想想", "next": "elder_no" } ] }
+  ],
+  "elder_yes": [
+    { "quest": "q_slime", "action": "start" },
+    { "speaker": "村長", "text": "太好了!東邊柵欄外的深草叢裡就有。要是體力見底,就回我家的床上休息,順便存檔。" }
+  ],
+  "elder_no": [
+    { "speaker": "村長", "text": "沒關係,準備好再來找我。" }
+  ],
+  "elder_wait": [
+    { "speaker": "村長", "text": "綠團子在東邊的深草叢裡。目前:{progress:q_slime}。" }
+  ],
+  "elder_done": [
+    { "speaker": "村長", "text": "你真的做到了!這是一點心意。" },
+    { "quest": "q_slime", "action": "complete" },
+    { "text": "對了,藥草師艾拉好像也在找人幫忙,她在村子東北邊的小屋。" }
+  ],
+  "elder_after": [
+    { "if": "quest:q_herb=done", "then": "elder_boss" },
+    { "speaker": "村長", "text": "艾拉在村子東北邊的小屋,去看看她吧。" }
+  ],
+  "elder_boss": [
+    { "speaker": "村長", "text": "綠團子是從北邊的洞窟跑出來的。獵人說,洞裡住著一隻巨蛛。" },
+    { "text": "你願意去解決牠嗎?去之前記得先在床上休息。", "choices": [ { "label": "我去!", "next": "elder_boss_yes" }, { "label": "再等等", "next": "elder_no" } ] }
+  ],
+  "elder_boss_yes": [
+    { "quest": "q_boss", "action": "start" },
+    { "speaker": "村長", "text": "洞口在村子的東北角,我會交代守衛放你進去。願你平安回來。" }
+  ],
+  "elder_wait_boss": [
+    { "if": "quest:q_boss=ready", "then": "elder_boss_done" },
+    { "speaker": "村長", "text": "洞口在東北角,巨蛛就在洞窟深處。魔力夠的話,多用重擊。" }
+  ],
+  "elder_boss_done": [
+    { "quest": "q_boss", "action": "complete" },
+    { "speaker": "村長", "text": "巨蛛被打倒了!晨光村終於可以安心了。{hero},你是我們的勇者。" },
+    { "ending": true }
+  ],
+  "elder_end": [
+    { "speaker": "村長", "text": "謝謝你,{hero}。村子恢復平靜了。" }
+  ],
+
+  "herbalist": [
+    { "if": "quest:q_herb=done", "then": "herb_end" },
+    { "if": "quest:q_herb=ready", "then": "herb_done" },
+    { "if": "quest:q_herb=active", "then": "herb_wait" },
+    { "if": "quest:q_slime=done", "then": "herb_ask" },
+    { "speaker": "艾拉", "text": "我是藥草師艾拉。草原上的怪物太多,我不敢出去採藥……" }
+  ],
+  "herb_ask": [
+    { "speaker": "艾拉", "text": "聽說你打倒了綠團子!能幫我採 2 株藥草嗎?草原上有,野狼身上也會掉。", "choices": [ { "label": "好", "next": "herb_yes" }, { "label": "晚點再說", "next": "herb_no" } ] }
+  ],
+  "herb_yes": [
+    { "quest": "q_herb", "action": "start" },
+    { "speaker": "艾拉", "text": "謝謝!藥草長在深草叢附近,看到會發光的綠葉子就走過去撿。" }
+  ],
+  "herb_no": [
+    { "speaker": "艾拉", "text": "好,我等你。" }
+  ],
+  "herb_wait": [
+    { "speaker": "艾拉", "text": "藥草目前:{progress:q_herb}。" }
+  ],
+  "herb_done": [
+    { "quest": "q_herb", "action": "complete" },
+    { "speaker": "艾拉", "text": "有了這些藥草,我能做出更好的藥水。這兩瓶高級藥水給你!" },
+    { "text": "村長說北邊洞窟有東西在作怪,去找他問問吧。" }
+  ],
+  "herb_end": [
+    { "speaker": "艾拉", "text": "藥水要省著用喔。" }
+  ],
+
+  "smith": [
+    { "if": "flag:smith_gift", "then": "smith_again" },
+    { "speaker": "鐵匠", "text": "年輕人,打怪前先看看自己的狀態(按 Esc 或 B 鈕開選單)。這瓶藥水送你。" },
+    { "give": { "item": "potion", "qty": 1 } },
+    { "set": { "flag": "smith_gift" } }
+  ],
+  "smith_again": [
+    { "speaker": "鐵匠", "text": "等級越高,攻擊和防禦都會變強。多練練吧。" }
+  ],
+
+  "guard": [
+    { "if": "quest:q_boss=active,done", "then": "guard_ok" },
+    { "speaker": "守衛", "text": "洞窟裡很危險,沒有村長的囑咐別進去。" }
+  ],
+  "guard_ok": [
+    { "speaker": "守衛", "text": "村長交代過了,請進。巨蛛就在洞窟深處,小心。" }
+  ],
+
+  "boss": [
+    { "speaker": "???", "text": "……誰敢闖進我的洞窟?" },
+    { "battle": "boss_spider" },
+    { "set": { "flag": "boss_down" } },
+    { "speaker": "", "text": "洞窟巨蛛倒下了!洞窟安靜下來。回去告訴村長吧。" }
+  ]
+}

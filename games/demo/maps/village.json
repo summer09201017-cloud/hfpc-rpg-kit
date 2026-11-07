@@ -1,0 +1,359 @@
+{
+  "compressionlevel": -1,
+  "height": 16,
+  "infinite": false,
+  "orientation": "orthogonal",
+  "renderorder": "right-down",
+  "tiledversion": "1.11.0",
+  "type": "map",
+  "version": "1.10",
+  "width": 24,
+  "tilewidth": 32,
+  "tileheight": 32,
+  "nextlayerid": 5,
+  "nextobjectid": 10,
+  "properties": [
+    {
+      "name": "name",
+      "type": "string",
+      "value": "晨光村"
+    }
+  ],
+  "tilesets": [
+    {
+      "firstgid": 1,
+      "name": "palette",
+      "tilecount": 17,
+      "columns": 0,
+      "tilewidth": 32,
+      "tileheight": 32,
+      "margin": 0,
+      "spacing": 0
+    }
+  ],
+  "layers": [
+    {
+      "id": 1,
+      "name": "ground",
+      "type": "tilelayer",
+      "visible": true,
+      "opacity": 1,
+      "x": 0,
+      "y": 0,
+      "width": 24,
+      "height": 16,
+      "data": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 6, 6, 6, 6, 6, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 7, 7, 7, 7, 6, 1, 4, 4, 4, 6, 6, 6, 6, 1, 1, 1, 1, 1, 1, 12, 1, 1, 1, 1, 7, 7, 7, 7, 6, 1, 4, 4, 4, 7, 7, 7, 6, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 1, 1, 1, 1, 1, 1, 1, 7, 7, 7, 6, 2, 2, 1, 2, 2, 1, 2, 2, 1, 1, 1, 1, 3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 2, 2, 1, 2, 2, 1, 1, 1, 1, 1, 3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 1, 2, 2, 1, 2, 1, 1, 1, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 1, 2, 2, 1, 2, 2, 1, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 1, 2, 1, 2, 2, 1, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 1, 1, 2, 2, 1, 2, 2, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 3, 3, 3, 1, 2, 2, 1, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 2, 2, 1, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 1, 2, 2, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 1, 2, 2, 1, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 2, 2, 1, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+    },
+    {
+      "id": 2,
+      "name": "deco",
+      "type": "tilelayer",
+      "visible": true,
+      "opacity": 1,
+      "x": 0,
+      "y": 0,
+      "width": 24,
+      "height": 16,
+      "data": [5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 11, 11, 11, 11, 5, 5, 0, 9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 11, 11, 10, 11, 5, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 14, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 14, 0, 0, 0, 15, 0, 0, 0, 5, 0, 0, 0, 0, 5, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 15, 0, 14, 0, 0, 0, 0, 0, 0, 5, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 15, 0, 0, 0, 0, 0, 0, 0, 0, 5, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 15, 0, 0, 5, 0, 0, 0, 0, 0, 5, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 17, 0, 0, 0, 15, 0, 0, 0, 0, 0, 0, 0, 5, 5, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 15, 0, 0, 0, 0, 5, 0, 0, 0, 5, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 15, 0, 0, 0, 0, 0, 14, 0, 0, 5, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 15, 0, 5, 0, 0, 0, 0, 5, 0, 5, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 15, 0, 0, 0, 0, 0, 0, 0, 0, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5]
+    },
+    {
+      "id": 3,
+      "name": "collision",
+      "type": "tilelayer",
+      "visible": true,
+      "opacity": 1,
+      "x": 0,
+      "y": 0,
+      "width": 24,
+      "height": 16,
+      "data": [5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 0, 6, 6, 6, 6, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 11, 11, 11, 11, 5, 5, 0, 9, 0, 0, 0, 6, 0, 4, 4, 4, 6, 6, 6, 6, 0, 0, 0, 0, 11, 11, 0, 11, 5, 5, 0, 0, 0, 0, 0, 6, 0, 4, 4, 4, 0, 0, 0, 6, 0, 0, 0, 0, 0, 0, 0, 0, 5, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 0, 0, 0, 0, 0, 0, 0, 0, 5, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 15, 0, 0, 0, 5, 0, 0, 0, 0, 5, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 15, 0, 0, 0, 0, 0, 0, 0, 0, 5, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 15, 0, 0, 0, 0, 0, 0, 0, 0, 5, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 15, 0, 0, 5, 0, 0, 0, 0, 0, 5, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 17, 0, 0, 0, 15, 0, 0, 0, 0, 0, 0, 0, 5, 5, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 15, 0, 0, 0, 0, 5, 0, 0, 0, 5, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 15, 0, 0, 0, 0, 0, 0, 0, 0, 5, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 15, 0, 5, 0, 0, 0, 0, 5, 0, 5, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 15, 0, 0, 0, 0, 0, 0, 0, 0, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5]
+    },
+    {
+      "id": 4,
+      "name": "objects",
+      "type": "objectgroup",
+      "visible": true,
+      "opacity": 1,
+      "x": 0,
+      "y": 0,
+      "draworder": "topdown",
+      "objects": [
+        {
+          "id": 1,
+          "name": "床",
+          "type": "heal",
+          "x": 64,
+          "y": 64,
+          "width": 32,
+          "height": 32,
+          "rotation": 0,
+          "visible": true,
+          "point": false,
+          "properties": []
+        },
+        {
+          "id": 2,
+          "name": "村長",
+          "type": "npc",
+          "x": 192,
+          "y": 192,
+          "width": 32,
+          "height": 32,
+          "rotation": 0,
+          "visible": true,
+          "point": false,
+          "properties": [
+            {
+              "name": "dialogue",
+              "type": "string",
+              "value": "elder"
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "value": "村長"
+            },
+            {
+              "name": "color",
+              "type": "string",
+              "value": "#8d6e4c"
+            },
+            {
+              "name": "hair",
+              "type": "string",
+              "value": "#dddddd"
+            },
+            {
+              "name": "face",
+              "type": "string",
+              "value": "left"
+            }
+          ]
+        },
+        {
+          "id": 3,
+          "name": "艾拉",
+          "type": "npc",
+          "x": 384,
+          "y": 128,
+          "width": 32,
+          "height": 32,
+          "rotation": 0,
+          "visible": true,
+          "point": false,
+          "properties": [
+            {
+              "name": "dialogue",
+              "type": "string",
+              "value": "herbalist"
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "value": "艾拉"
+            },
+            {
+              "name": "color",
+              "type": "string",
+              "value": "#6cb86a"
+            },
+            {
+              "name": "hair",
+              "type": "string",
+              "value": "#c0392b"
+            },
+            {
+              "name": "face",
+              "type": "string",
+              "value": "down"
+            }
+          ]
+        },
+        {
+          "id": 4,
+          "name": "鐵匠",
+          "type": "npc",
+          "x": 288,
+          "y": 288,
+          "width": 32,
+          "height": 32,
+          "rotation": 0,
+          "visible": true,
+          "point": false,
+          "properties": [
+            {
+              "name": "dialogue",
+              "type": "string",
+              "value": "smith"
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "value": "鐵匠"
+            },
+            {
+              "name": "color",
+              "type": "string",
+              "value": "#555555"
+            },
+            {
+              "name": "hair",
+              "type": "string",
+              "value": "#222222"
+            },
+            {
+              "name": "face",
+              "type": "string",
+              "value": "right"
+            }
+          ]
+        },
+        {
+          "id": 5,
+          "name": "守衛",
+          "type": "npc",
+          "x": 640,
+          "y": 96,
+          "width": 32,
+          "height": 32,
+          "rotation": 0,
+          "visible": true,
+          "point": false,
+          "properties": [
+            {
+              "name": "dialogue",
+              "type": "string",
+              "value": "guard"
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "value": "守衛"
+            },
+            {
+              "name": "color",
+              "type": "string",
+              "value": "#4a6fa5"
+            },
+            {
+              "name": "hair",
+              "type": "string",
+              "value": "#4a3020"
+            },
+            {
+              "name": "face",
+              "type": "string",
+              "value": "right"
+            }
+          ]
+        },
+        {
+          "id": 6,
+          "name": "藥草",
+          "type": "item",
+          "x": 576,
+          "y": 384,
+          "width": 32,
+          "height": 32,
+          "rotation": 0,
+          "visible": true,
+          "point": false,
+          "properties": [
+            {
+              "name": "item",
+              "type": "string",
+              "value": "herb"
+            },
+            {
+              "name": "qty",
+              "type": "int",
+              "value": 1
+            }
+          ]
+        },
+        {
+          "id": 7,
+          "name": "藥草",
+          "type": "item",
+          "x": 672,
+          "y": 224,
+          "width": 32,
+          "height": 32,
+          "rotation": 0,
+          "visible": true,
+          "point": false,
+          "properties": [
+            {
+              "name": "item",
+              "type": "string",
+              "value": "herb"
+            },
+            {
+              "name": "qty",
+              "type": "int",
+              "value": 1
+            }
+          ]
+        },
+        {
+          "id": 8,
+          "name": "草原",
+          "type": "zone",
+          "x": 480,
+          "y": 160,
+          "width": 256,
+          "height": 320,
+          "rotation": 0,
+          "visible": true,
+          "point": false,
+          "properties": [
+            {
+              "name": "encounter",
+              "type": "string",
+              "value": "field"
+            }
+          ]
+        },
+        {
+          "id": 9,
+          "name": "洞口",
+          "type": "portal",
+          "x": 672,
+          "y": 64,
+          "width": 32,
+          "height": 32,
+          "rotation": 0,
+          "visible": true,
+          "point": false,
+          "properties": [
+            {
+              "name": "map",
+              "type": "string",
+              "value": "cave"
+            },
+            {
+              "name": "x",
+              "type": "int",
+              "value": 2
+            },
+            {
+              "name": "y",
+              "type": "int",
+              "value": 9
+            },
+            {
+              "name": "dir",
+              "type": "string",
+              "value": "up"
+            },
+            {
+              "name": "showIf",
+              "type": "string",
+              "value": "quest:q_boss=active,done"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

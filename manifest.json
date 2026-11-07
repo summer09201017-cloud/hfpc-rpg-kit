@@ -1,0 +1,15 @@
+{
+  "name": "RPG 套件",
+  "short_name": "RPG",
+  "description": "資料驅動的回合制 RPG 遊戲機;卡帶放在 games/ 底下",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#1b2838",
+  "theme_color": "#1b2838",
+  "lang": "zh-Hant",
+  "icons": [
+    { "src": "./icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}

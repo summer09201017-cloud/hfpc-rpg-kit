@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<title>RPG 套件</title>
+<meta name="theme-color" content="#1b2838">
+<link rel="manifest" href="./manifest.json">
+<link rel="icon" href="./icon.svg" type="image/svg+xml">
+<style>
+  :root { --bg:#1b2838; --panel:#15202b; --ink:#f3f6fa; --muted:#aab4c0; --accent:#ffb347; --line:#2d3e50; }
+  * { box-sizing:border-box; }
+  html, body { margin:0; background:var(--bg); color:var(--ink); font-family:system-ui, "Noto Sans TC", "Microsoft JhengHei", sans-serif; -webkit-text-size-adjust:100%; }
+  body { display:flex; flex-direction:column; min-height:100dvh; }
+  #app { display:flex; flex-direction:column; height:100dvh; }
+  #stage { position:relative; flex:1; min-height:240px; overflow:hidden; background:#101820; }
+  #cv { position:absolute; inset:0; width:100%; height:100%; display:block; touch-action:none; }
+  #ui { position:absolute; inset:0; pointer-events:none; }
+  #ui > * { pointer-events:auto; }
+  .hidden { display:none !important; }
+  button { font:inherit; font-size:17px; padding:10px 16px; border-radius:12px; border:1px solid var(--line); background:#243447; color:var(--ink); cursor:pointer; min-height:48px; }
+  button.primary { background:var(--accent); color:#1b1b1b; border-color:transparent; font-weight:700; }
+  button:disabled { opacity:.45; cursor:default; }
+  button.sel { outline:3px solid var(--accent); }
+  /* 抬頭顯示 */
+  .hud { position:absolute; left:10px; top:10px; background:rgba(21,32,43,.85); border:1px solid var(--line); border-radius:12px; padding:8px 12px; font-size:14px; min-width:190px; }
+  .hud-name { font-weight:700; margin-bottom:4px; }
+  .hud-row { display:flex; align-items:center; gap:6px; margin:3px 0; }
+  .hud-row span { width:32px; color:var(--muted); font-size:12px; }
+  .bar { position:relative; flex:1; height:14px; background:#0c141c; border-radius:7px; overflow:hidden; }
+  .bar i { position:absolute; left:0; top:0; bottom:0; background:#4caf50; }
+  .bar.mp i { background:#4a90e2; }
+  .bar b { position:absolute; inset:0; font-size:10px; line-height:14px; text-align:center; font-weight:600; }
+  .hud-gold { margin-top:4px; font-size:13px; color:var(--muted); }
+  /* 對話框 */
+  .dlg { position:absolute; left:12px; right:12px; bottom:12px; background:rgba(21,32,43,.96); border:2px solid var(--accent); border-radius:14px; padding:12px 14px; font-size:18px; line-height:1.5; }
+  .dlg-name { font-weight:700; color:var(--accent); margin-bottom:4px; }
+  .dlg-next { display:block; margin:8px 0 0 auto; }
+  .dlg-choices { display:flex; flex-wrap:wrap; gap:8px; margin-top:10px; }
+  /* 選單 */
+  .panel { position:absolute; inset:10px; background:rgba(21,32,43,.97); border:1px solid var(--line); border-radius:14px; display:flex; flex-direction:column; overflow:hidden; }
+  .tabs { display:flex; border-bottom:1px solid var(--line); }
+  .tabs button { flex:1; border-radius:0; border:0; border-bottom:3px solid transparent; background:transparent; }
+  .tabs button.on { border-bottom-color:var(--accent); color:var(--accent); }
+  .panel-body { flex:1; overflow:auto; padding:12px 14px; font-size:16px; }
+  .panel .close { margin:8px; }
+  .stats th { text-align:left; color:var(--muted); font-weight:500; padding:4px 12px 4px 0; }
+  .items li, .quests li { list-style:none; display:flex; flex-wrap:wrap; align-items:center; gap:6px 12px; padding:8px 0; border-bottom:1px solid var(--line); }
+  .items, .quests { padding:0; margin:0; }
+  .items li span, .quests li span { color:var(--muted); font-size:14px; flex:1 1 100%; }
+  .quests li em { color:var(--accent); font-style:normal; }
+  .quests.done li b { color:var(--muted); }
+  .btns { display:flex; flex-wrap:wrap; gap:10px; margin:12px 0; }
+  .btns.col { flex-direction:column; }
+  .btns small { display:block; font-weight:400; font-size:12px; color:#333; }
+  .hint, .empty { color:var(--muted); font-size:14px; }
+  /* 戰鬥 */
+  .battle { position:absolute; left:8px; right:8px; bottom:8px; background:rgba(21,32,43,.95); border:2px solid #b94a48; border-radius:14px; padding:10px; font-size:15px; }
+  .bt-hero { font-weight:700; margin-bottom:6px; }
+  .targets { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:6px; }
+  .targets button { padding:6px 10px; min-height:40px; font-size:14px; }
+  .targets button.dead { text-decoration:line-through; }
+  .bt-log { min-height:3.2em; max-height:5em; overflow:auto; font-size:14px; color:var(--muted); margin-bottom:6px; }
+  .cmds { display:flex; flex-wrap:wrap; gap:8px; }
+  .cmds button { flex:1 1 40%; }
+  .bt-result h2 { margin:4px 0 8px; }
+  /* 提示 */
+  .toast { position:absolute; left:50%; top:14px; transform:translateX(-50%); background:rgba(0,0,0,.8); border:1px solid var(--accent); border-radius:999px; padding:8px 16px; font-size:15px; max-width:92%; text-align:center; }
+  /* 整頁畫面 */
+  .screen { position:absolute; inset:0; overflow:auto; background:linear-gradient(#1b2838, #0f1720); display:flex; align-items:flex-start; justify-content:center; padding:16px; }
+  .card { width:100%; max-width:560px; background:var(--panel); border:1px solid var(--line); border-radius:16px; padding:20px 22px; }
+  .card h1 { margin:0 0 6px; font-size:28px; color:var(--accent); }
+  .card .sub { margin:0 0 12px; color:var(--muted); }
+  .card .intro { font-size:17px; line-height:1.6; white-space:pre-line; }
+  .howto summary { cursor:pointer; color:var(--muted); }
+  .howto ul { padding-left:20px; line-height:1.7; }
+  .err-card ol { line-height:1.6; }
+  /* 虛擬按鍵(手機才顯示) */
+  #pad { display:none; height:168px; background:#0f1720; border-top:1px solid var(--line); padding:8px 12px; align-items:center; justify-content:space-between; user-select:none; -webkit-user-select:none; }
+  @media (pointer:coarse) { #pad { display:flex; } }
+  #pad.force { display:flex; }
+  .dpad { display:grid; grid-template-columns:repeat(3, 50px); grid-template-rows:repeat(3, 50px); gap:4px; }
+  .dpad button { min-height:50px; padding:0; font-size:22px; border-radius:10px; }
+  .dpad button.on { background:var(--accent); color:#1b1b1b; }
+  .ab { display:flex; gap:14px; align-items:center; }
+  .ab button { width:68px; height:68px; border-radius:50%; font-size:14px; font-weight:700; padding:0; white-space:nowrap; line-height:1.1; }
+  /* 頁尾 */
+  footer { padding:14px 16px 28px; color:var(--muted); font-size:14px; line-height:1.6; border-top:1px solid var(--line); }
+  footer details { display:inline; }
+  footer summary { display:inline; cursor:pointer; color:var(--accent); }
+  footer ul { margin:6px 0 0; padding-left:20px; }
+  footer .credits { margin-top:8px; font-size:13px; }
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="stage">
+    <canvas id="cv"></canvas>
+    <div id="ui"></div>
+  </div>
+  <div id="pad">
+    <div class="dpad">
+      <span></span><button data-dir="up" aria-label="上">▲</button><span></span>
+      <button data-dir="left" aria-label="左">◀</button><span></span><button data-dir="right" aria-label="右">▶</button>
+      <span></span><button data-dir="down" aria-label="下">▼</button><span></span>
+    </div>
+    <div class="ab">
+      <button data-btn="cancel" aria-label="選單">B 選單</button>
+      <button data-btn="confirm" class="primary" aria-label="確認">A 確認</button>
+    </div>
+  </div>
+</div>
+<footer id="foot">
+  <div>🏷️ <span id="verText">版本 v?</span> · <details><summary>更新紀錄</summary><ul id="changelog"></ul></details><span id="appVerBadge" style="margin-left:8px"></span></div>
+  <div class="credits">遊戲機:hfpc-rpg-kit(engine/)· 卡帶:<span id="gameTitle">—</span>(games/)· 鍵盤:方向鍵走、Enter 確認、Esc 選單</div>
+  <div id="hfpc-feedback"></div>
+</footer>
+<script type="module">
+  import { boot } from './engine/main.js';
+  import { APP_VERSION, CHANGELOG } from './engine/version.js';
+  const q = new URLSearchParams(location.search);
+  const gameId = (q.get('game') || 'demo').replace(/[^\w-]/g, '');
+  document.getElementById('verText').textContent = `版本 v${APP_VERSION}(${CHANGELOG[0].d})`;
+  document.getElementById('changelog').replaceChildren(...CHANGELOG.map((c) => { const li = document.createElement('li'); li.textContent = `v${c.v}(${c.d}):${c.t}`; return li; }));
+  if (q.get('pad') === '1') document.getElementById('pad').classList.add('force');
+
+  // 📊 匿名使用統計(只數開啟 / 停留秒數 / 破關,零個資;自己電腦上測試不送)
+  const STAT = 'https://hfpc-play-stats.summer09201017.workers.dev/api/ping?g=rpgkit-' + gameId;
+  const isLocal = /^(localhost|127\.0\.0\.1)$/.test(location.hostname);
+  const ping = (suffix, extra) => { if (isLocal) return; try { navigator.sendBeacon(STAT + suffix + (extra || '')); } catch (e) {} };
+  ping('');
+  const _t0 = Date.now();
+  window.addEventListener('pagehide', () => ping('-dwell', '&t=' + Math.round((Date.now() - _t0) / 1000)), { once: true });
+
+  const game = await boot({
+    canvas: document.getElementById('cv'), uiRoot: document.getElementById('ui'), padRoot: document.getElementById('pad'),
+    gameId, seed: q.get('seed') ? Number(q.get('seed')) : undefined, debug: q.get('debug') === '1',
+    onEvent: (ev) => { if (ev === 'ending') ping('-done'); },
+  });
+  window.__rpg = game;
+  if (game && game.g) { document.title = game.g.title; document.getElementById('gameTitle').textContent = game.g.title; }
+
+  // 👍 按讚 + 留言(艦隊共用 widget;kids 模式不收暱稱)
+  const fb = document.createElement('script');
+  fb.src = 'https://hfpc-feedback.summer09201017.workers.dev/widget.js';
+  fb.dataset.g = 'rpgkit-' + gameId; fb.dataset.mode = 'kids'; fb.dataset.title = (game && game.g && game.g.title) || 'RPG'; fb.dataset.root = '#hfpc-feedback'; fb.defer = true;
+  if (!isLocal) document.body.append(fb);
+
+  if ('serviceWorker' in navigator && location.protocol === 'https:') navigator.serviceWorker.register('./sw.js').catch(() => {});
+  /* 🏷️ 版號徽章:問正在控制本頁的 SW 拿實際執行中的版本(頁面上的 verText 是程式碼寫的,這個是真的在跑的) */
+  (function () {
+    const el = document.getElementById('appVerBadge');
+    if (!el || !('serviceWorker' in navigator) || location.protocol !== 'https:') return;
+    navigator.serviceWorker.addEventListener('message', (e) => { if (e.data && e.data.type === 'SW_VERSION') { const m = /-v(\d+)$/.exec(String(e.data.v)); if (m && m[1] !== APP_VERSION) el.textContent = `(裝置上實際執行 v${m[1]},重新整理一次會更新)`; } });
+    const ask = () => { const c = navigator.serviceWorker.controller; if (c) c.postMessage('GET_VERSION'); };
+    navigator.serviceWorker.ready.then(ask).catch(() => {});
+    navigator.serviceWorker.addEventListener('controllerchange', ask);
+  })();
+</script>
+</body>
+</html>

@@ -1,0 +1,6 @@
+{
+  "potion":   { "name": "藥水",     "type": "heal",     "hp": 20, "desc": "回復 20 點體力" },
+  "hipotion": { "name": "高級藥水", "type": "heal",     "hp": 60, "desc": "回復 60 點體力" },
+  "ether":    { "name": "魔力水",   "type": "heal",     "mp": 8,  "desc": "回復 8 點魔力" },
+  "herb":     { "name": "藥草",     "type": "material",           "desc": "艾拉要的藥草,帶回去給她" }
+}

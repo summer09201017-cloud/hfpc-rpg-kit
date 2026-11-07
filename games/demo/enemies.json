@@ -1,0 +1,7 @@
+{
+  "blob":     { "name": "綠團子",   "hp": 12, "atk": 4,  "def": 1, "spd": 3, "xp": 7,   "gold": 4,   "drops": [ { "item": "potion", "chance": 0.1 } ], "sprite": { "shape": "blob", "color": "#6cc24a" } },
+  "wolf":     { "name": "野狼",     "hp": 22, "atk": 7,  "def": 2, "spd": 7, "xp": 15,  "gold": 8,   "drops": [ { "item": "herb", "chance": 0.4 } ],   "sprite": { "shape": "wolf", "color": "#8a7a6a" } },
+  "skeleton": { "name": "骷髏兵",   "hp": 30, "atk": 9,  "def": 4, "spd": 4, "xp": 28,  "gold": 15,  "drops": [ { "item": "ether", "chance": 0.3 } ],  "sprite": { "shape": "skeleton", "color": "#e8e4d8" } },
+  "bat":      { "name": "洞窟蝙蝠", "hp": 16, "atk": 6,  "def": 1, "spd": 9, "xp": 12,  "gold": 6,   "drops": [],                                        "sprite": { "shape": "bat", "color": "#6a5a8a" } },
+  "spider":   { "name": "洞窟巨蛛", "hp": 90, "atk": 12, "def": 5, "spd": 5, "xp": 120, "gold": 100, "drops": [], "boss": true,                           "sprite": { "shape": "spider", "color": "#5b3a7a" } }
+}

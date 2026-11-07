@@ -1,0 +1,19 @@
+{
+  "field": {
+    "rate": 0.12,
+    "groups": [
+      { "enemies": [ "blob" ], "weight": 5 },
+      { "enemies": [ "blob", "blob" ], "weight": 3 },
+      { "enemies": [ "wolf" ], "weight": 2 }
+    ]
+  },
+  "cave": {
+    "rate": 0.15,
+    "groups": [
+      { "enemies": [ "bat", "bat" ], "weight": 3 },
+      { "enemies": [ "skeleton" ], "weight": 3 },
+      { "enemies": [ "wolf", "bat" ], "weight": 2 }
+    ]
+  },
+  "boss_spider": { "fixed": [ "spider" ] }
+}
