@@ -1,6 +1,7 @@
 // RPG 套件 SW — 網路優先、離線退快取(改版必 bump CACHE;engine/version.js 的 CHANGELOG 最上面一筆要同號,tests/version.test.mjs 會擋)
 // v1(2026-11-08):首發
-const CACHE = 'rpgkit-v1';
+// v2(2026-11-08):手機方向鍵點一下也走一格
+const CACHE = 'rpgkit-v2';
 const CORE = [
   './', './index.html', './manifest.json', './icon.svg',
   './engine/main.js', './engine/loader.js', './engine/schema.js', './engine/map.js', './engine/cond.js', './engine/rng.js',

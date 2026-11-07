@@ -156,7 +156,7 @@ export class Game {
         if (act === 'confirm') this.interact();
         else if (act === 'cancel') this.openMenu();
         else {
-          const d = this.input.dir();
+          const d = this.input.dir() || this.input.takeTap();
           if (d) {
             this.pos.dir = d;
             const [dx, dy] = DELTA[d], tx = this.pos.x + dx, ty = this.pos.y + dy;

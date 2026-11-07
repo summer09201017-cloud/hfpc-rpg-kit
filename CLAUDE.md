@@ -7,7 +7,8 @@
 
 - 遊戲機 v1:走格子、NPC 對話(選項 / 條件跳轉 / 旗標)、任務三態(kill / collect / flag)、背包與道具、回合制戰鬥(攻擊 / 技能 / 道具 / 逃跑;頭目戰不能逃)、升等、單槽 localStorage 存檔(schema 版號、try/catch)、休息點、傳送點、遇敵區、手機虛擬按鍵、PWA(sw 網路優先)、頁尾版本與更新紀錄、按讚留言 widget、play-stats 三層打點(`rpgkit-<卡帶>` / `-dwell` / `-done`)。
 - 示範卡帶 `games/demo`《晨光村的勇者》:2 張地圖、3 任務、5 種怪、4 種道具;題材=打怪升等的經典 JRPG(原創,不是任何既有遊戲的重製)。
-- 驗收:`npm test`(驗證器 + 32 單元)、`npm run e2e`(真瀏覽器 37 項:真鍵盤走路、對話、選單、遇敵打怪、回報、存檔→重整→讀檔、撿道具、條件對話、傳送、頭目戰逃不掉、結局、壞卡帶錯誤畫面、手機虛擬按鍵 pointer 事件)。
+- 線上:https://hfpc-rpg-kit.summer09201017.workers.dev(v2;GitHub summer09201017-cloud/hfpc-rpg-kit,push 不會自動部署,要手動 wrangler)。
+- 驗收:`npm test`(驗證器 + 32 單元)、`npm run e2e`(真瀏覽器 38 項:真鍵盤走路、對話、選單、遇敵打怪、回報、存檔→重整→讀檔、撿道具、條件對話、傳送、頭目戰逃不掉、結局、壞卡帶錯誤畫面、手機虛擬按鍵 pointer 事件)。
 - 美術 = 程式畫的佔位(tiles.json 調色 + sprites.js 的 kind / shape);Tiled 帶圖片圖塊集時引擎優先用圖片。`.claude/no-design-needed`:正式美術開工前再出 Claude Design 設計稿。
 - ⚠ 規格:使用者 1108 說「直接做」,沒走 Codex 產規格(141 號提示詞已存 skills repo `references/spec-prompts/`,輪值仍是 Codex)。
 - 📋 待辦:部署後進帳本(sites.json、作品集憫安合輯、play-stats NAMES 登記 `rpgkit-demo`);兒子開第二張卡帶;v2 卡片池見 README「刻意不做」。

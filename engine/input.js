@@ -35,7 +35,7 @@ export class Input {
     if (!el) return;
     const press = (b, on) => {
       const d = b.dataset.dir, t = b.dataset.btn;
-      if (d) { if (on) { this.held.delete(d); this.held.add(d); } else this.held.delete(d); }
+      if (d) { if (on) { this.held.delete(d); this.held.add(d); this.tap = d; } else this.held.delete(d); }   // 點一下也算一步(放開得比一幀還快時 held 來不及被看到)
       else if (t && on) this.queue.push(t);
       b.classList.toggle('on', on);
     };
@@ -46,7 +46,8 @@ export class Input {
     });
   }
   dir() { let last = null; for (const d of this.held) last = d; return last; }
+  takeTap() { const t = this.tap || null; this.tap = null; return t; }   // 一次性:虛擬按鍵剛被點的方向
   poll() { return this.queue.shift() || null; }
-  clear() { this.queue.length = 0; }
+  clear() { this.queue.length = 0; this.tap = null; }
   destroy() { this.target.removeEventListener('keydown', this._down); this.target.removeEventListener('keyup', this._up); this.target.removeEventListener('blur', this._blur); }
 }

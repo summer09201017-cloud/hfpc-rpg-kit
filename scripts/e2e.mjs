@@ -197,7 +197,13 @@ try {
   await mp.mouse.move(b.x + b.width / 2, b.y + b.height / 2); await mp.mouse.down();
   await mp.waitForFunction(() => window.__rpg.pos.x !== 4, null, { timeout: 3000 }).catch(() => {});
   await mp.mouse.up(); await mp.waitForFunction(() => !window.__rpg.move, null, { timeout: 2500 }).catch(() => {});
-  check('手機虛擬方向鍵能走', (await mp.evaluate(() => window.__rpg.pos.x)) === 5);
+  check('手機虛擬方向鍵按住能走', (await mp.evaluate(() => window.__rpg.pos.x)) === 5);
+  const lb = await mp.locator('[data-dir="left"]').boundingBox();
+  await mp.mouse.click(lb.x + lb.width / 2, lb.y + lb.height / 2);   // 點一下(比一幀還快)
+  await mp.waitForFunction(() => window.__rpg.pos.x === 4 && !window.__rpg.move, null, { timeout: 3000 }).catch(() => {});
+  check('手機虛擬方向鍵點一下也走一格', (await mp.evaluate(() => window.__rpg.pos.x)) === 4);
+  await mp.mouse.click(b.x + b.width / 2, b.y + b.height / 2);
+  await mp.waitForFunction(() => window.__rpg.pos.x === 5 && !window.__rpg.move, null, { timeout: 3000 }).catch(() => {});
   const ab = await mp.locator('[data-btn="confirm"]').boundingBox();
   await mp.mouse.click(ab.x + ab.width / 2, ab.y + ab.height / 2);
   await mp.waitForSelector('#dlg:not(.hidden)', { timeout: 3000 }).catch(() => {});
