@@ -1,7 +1,7 @@
 // 資料契約驗證:瀏覽器開場與 scripts/validate-game.mjs 共用同一支。
 // 錯誤訊息一律白話中文,寫給「填卡帶的人」看,不是寫給程式設計師看。
 // 回傳 { errors, warnings, maps }:errors 有東西就不准開玩;warnings 只提醒。
-import { parseTiled, OBJECT_TYPES, imageTileFor, tileBlocked, inBounds } from './map.js';
+import { parseTiled, OBJECT_TYPES, imageTileFor, tileBlocked, inBounds, resolveMapPath } from './map.js';
 import { condError, parseCond } from './cond.js';
 
 export const DATA_FILES = ['game.json', 'tiles.json', 'dialogues.json', 'quests.json', 'items.json', 'enemies.json', 'encounters.json'];
@@ -44,7 +44,12 @@ export function validateGame(d) {
     if (!raw) { E(`地圖 ${id} 的檔案讀不到(game.json 寫的是 ${file})`); continue; }
     const r = parseTiled(id, raw);
     r.errors.forEach(E);
-    if (r.map) { r.map.name = mapNameOf(id, g.maps[id]); maps[id] = r.map; }
+    if (r.map) {
+      r.map.name = mapNameOf(id, g.maps[id]); r.map.file = file;
+      // 圖片圖塊集的 image 是相對於地圖檔的;換算成相對於卡帶資料夾的 src,畫圖時用 src 抓圖
+      for (const ts of r.map.tilesets) if (ts.image) ts.src = resolveMapPath(file, ts.image);
+      maps[id] = r.map;
+    }
   }
   const posOk = (where, p) => {
     if (!isObj(p)) { E(`${where} 要寫成 {"map":..., "x":..., "y":...}`); return false; }

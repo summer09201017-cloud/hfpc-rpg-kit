@@ -34,6 +34,7 @@ test('sw.js 的 CORE 清單:列的檔案都存在,引擎與示範卡帶的檔案
     ...fs.readdirSync(path.join(ROOT, 'engine')).filter((f) => f.endsWith('.js')).map((f) => `./engine/${f}`),
     ...fs.readdirSync(path.join(ROOT, 'games/demo')).filter((f) => f.endsWith('.json')).map((f) => `./games/demo/${f}`),
     ...fs.readdirSync(path.join(ROOT, 'games/demo/maps')).filter((f) => f.endsWith('.json')).map((f) => `./games/demo/maps/${f}`),
+    ...(fs.existsSync(path.join(ROOT, 'games/demo/assets')) ? fs.readdirSync(path.join(ROOT, 'games/demo/assets')).filter((f) => f.endsWith('.png')).map((f) => `./games/demo/assets/${f}`) : []),
   ];
   for (const p of want) assert.ok(core.includes(p), `${p} 沒進 sw.js 的 CORE,離線會缺`);
 });

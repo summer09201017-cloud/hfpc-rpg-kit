@@ -308,7 +308,12 @@ export class Game {
     if (this.mode === 'title' || this.mode === 'ending' || !this.hero) { ctx.fillStyle = '#1b2838'; ctx.fillRect(0, 0, W, H); return; }
     if (this.mode === 'battle' && this.battle) { drawBattleScene(ctx, W, H, this.battle.enemies, this.t, this.hurtIdx, this.battleTheme); return; }
     const map = this.map, tw = map.tw;
-    const zoom = Math.max(1.5, Math.min(3.5, this.cssW / (13 * tw))) * this.dpr;
+    // 每格在畫面上至少 MIN_CELL、最多 MAX_CELL css 像素(不管卡帶的圖塊是 16 還是 32px),畫面寬約放 13 格;
+    // 放大倍率取整數,像素圖塊才不會糊、不會有接縫
+    const MIN_CELL = 44, MAX_CELL = 112;
+    const cell = Math.max(MIN_CELL, Math.min(MAX_CELL, this.cssW / 13));
+    let zoom = Math.max(1, Math.round(cell * this.dpr / tw));
+    if (tw * zoom / this.dpr < MIN_CELL) zoom += 1;
     const s = tw * zoom;
     let hx = this.pos.x, hy = this.pos.y;
     if (this.move) { const k = Math.min(1, this.move.t); hx = this.move.fx + (this.move.tx - this.move.fx) * k; hy = this.move.fy + (this.move.ty - this.move.fy) * k; }

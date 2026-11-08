@@ -1,0 +1,12 @@
+示範卡帶的美術素材(games/demo/assets/)
+
+tiny-town.png     Kenney「Tiny Town」1.1(Tilemap/tilemap_packed.png 原檔改名),16×16 一格、12 欄 × 11 列 = 132 格、無間距
+tiny-dungeon.png  Kenney「Tiny Dungeon」1.0(Tilemap/tilemap_packed.png 原檔改名),16×16 一格、12 欄 × 11 列 = 132 格、無間距
+water.png         自繪(本 repo),池塘岸邊九宮格 3 × 3 = 9 格、16×16 一格;照 Kenney Tiny Town 配色(草地 #84c669、陰影 #65a556、水 #009adc、泡沫 #76e4ff),CC0
+
+作者:Kenney(https://kenney.nl)
+授權:CC0 1.0(公眾領域貢獻,可自由用於個人、教育、商業用途,不強制署名)
+      http://creativecommons.org/publicdomain/zero/1.0/
+來源:https://kenney.nl/assets/tiny-town 、 https://kenney.nl/assets/tiny-dungeon
+
+人物與怪物仍是引擎用程式畫的(engine/sprites.js),不在這兩張圖裡。

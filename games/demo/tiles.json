@@ -1,19 +1,3 @@
 {
-  "1":  { "name": "草地",     "color": "#5a9e4b", "kind": "grass" },
-  "2":  { "name": "深草叢",   "color": "#3f8a3a", "kind": "tallgrass" },
-  "3":  { "name": "土路",     "color": "#c8a66a", "kind": "path" },
-  "4":  { "name": "水",       "color": "#3d7fc4", "kind": "water" },
-  "5":  { "name": "樹",       "color": "#2e6b2a", "kind": "tree" },
-  "6":  { "name": "石牆",     "color": "#8a8f99", "kind": "wall" },
-  "7":  { "name": "木地板",   "color": "#b48a5a", "kind": "floor" },
-  "8":  { "name": "屋頂",     "color": "#a34a3a", "kind": "roof" },
-  "9":  { "name": "床",       "color": "#e9e4d6", "kind": "bed" },
-  "10": { "name": "洞口",     "color": "#5c5c66", "kind": "cave" },
-  "11": { "name": "岩石",     "color": "#6e6a63", "kind": "rock" },
-  "12": { "name": "洞窟地面", "color": "#4a4652", "kind": "cavefloor" },
-  "13": { "name": "洞窟牆",   "color": "#2b2833", "kind": "cavewall" },
-  "14": { "name": "花",       "color": "#5a9e4b", "kind": "flower" },
-  "15": { "name": "柵欄",     "color": "#8d6e4c", "kind": "fence" },
-  "16": { "name": "門",       "color": "#6b4a2b", "kind": "door" },
-  "17": { "name": "桌子",     "color": "#8d6e4c", "kind": "table" }
+  "274": { "name": "床", "color": "#e9e4d6", "kind": "bed" }
 }

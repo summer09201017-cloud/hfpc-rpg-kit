@@ -12,10 +12,15 @@ const shade = (hex, k) => { // k>0 變亮、<0 變暗
 };
 function rr(ctx, x, y, w, h, r) { ctx.beginPath(); ctx.moveTo(x + r, y); ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r); ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath(); }
 
+// 圖塊集的圖:鍵 = 相對卡帶資料夾的路徑(validateGame 算好的 ts.src;Tiled 寫的 image 是相對地圖檔的,不能直接接在 base 後面)
+export const tilesetKey = (ts) => ts.src || ts.image;
 export function loadTilesetImages(maps, base) {
   const out = {}; const jobs = [];
-  for (const m of Object.values(maps)) for (const ts of m.tilesets) if (ts.image && !out[ts.image]) {
-    jobs.push(new Promise((res) => { const im = new Image(); im.onload = () => { out[ts.image] = im; res(); }; im.onerror = () => res(); im.src = base + ts.image; }));
+  for (const m of Object.values(maps)) for (const ts of m.tilesets) {
+    const key = ts.image && tilesetKey(ts);
+    if (!key || out[key]) continue;
+    out[key] = null;   // 先佔位,同一張圖只抓一次
+    jobs.push(new Promise((res) => { const im = new Image(); im.onload = () => { out[key] = im; res(); }; im.onerror = () => { delete out[key]; res(); }; im.src = base + key; }));
   }
   return Promise.all(jobs).then(() => out);
 }
@@ -50,7 +55,7 @@ export function drawTile(ctx, entry, x, y, s, t, gx, gy, noBg = false) {
 
 // cam = { x, y, w, h }(畫面座標,已乘 zoom)
 export function drawMap(ctx, map, palette, images, cam, zoom, t) {
-  const s = map.tw * zoom;
+  const s = map.tw * zoom, si = Math.ceil(s);   // 圖片圖塊畫整數像素(目的座標與尺寸都取整)才不會有接縫、不會糊
   const x0 = Math.max(0, Math.floor(cam.x / s)), y0 = Math.max(0, Math.floor(cam.y / s));
   const x1 = Math.min(map.w - 1, Math.ceil((cam.x + cam.w) / s)), y1 = Math.min(map.h - 1, Math.ceil((cam.y + cam.h) / s));
   for (let y = y0; y <= y1; y++) for (let x = x0; x <= x1; x++) {
@@ -59,9 +64,10 @@ export function drawMap(ctx, map, palette, images, cam, zoom, t) {
       if (!layer) continue;
       const gid = layer[i]; if (!gid) continue;
       const img = imageTileFor(map, gid);
-      if (img && images[img.tileset.image]) {
-        const ts = img.tileset, cols = ts.columns || Math.max(1, Math.floor(images[ts.image].width / ts.tilewidth));
-        ctx.drawImage(images[ts.image], (img.local % cols) * ts.tilewidth, Math.floor(img.local / cols) * ts.tileheight, ts.tilewidth, ts.tileheight, px, py, s + 0.5, s + 0.5);
+      const im = img && images[tilesetKey(img.tileset)];
+      if (im) {
+        const ts = img.tileset, cols = ts.columns || Math.max(1, Math.floor(im.width / ts.tilewidth));
+        ctx.drawImage(im, (img.local % cols) * ts.tilewidth, Math.floor(img.local / cols) * ts.tileheight, ts.tilewidth, ts.tileheight, px, py, si, si);
       } else {
         const entry = palette[gid] || { color: '#f0f', kind: 'flat' };
         if (layer === map.deco && (entry.kind === 'flat')) { ctx.fillStyle = entry.color; ctx.fillRect(px, py, s + 0.5, s + 0.5); }

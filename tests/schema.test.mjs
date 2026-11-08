@@ -42,8 +42,10 @@ test('突變:每種常見填錯都要被抓到,而且訊息講得出是哪裡', 
   v = mutate((d) => { d.dialogues.elder[5].texts = 'typo'; });
   assert.ok(hasErr(v, /對話 elder 第 6 句 有不認得的欄位:texts/));
 
-  v = mutate((d) => { d.maps.village.layers[0].data[6 * 24 + 4] = 99; });
-  assert.ok(hasErr(v, /地圖 village 用了圖塊 gid 99,但 tiles\.json 沒有這一號/));
+  v = mutate((d) => { d.maps.village.layers[0].data[6 * 24 + 4] = 999; });   // 999 不在任何圖片圖塊集、tiles.json 也沒有
+  assert.ok(hasErr(v, /地圖 village 用了圖塊 gid 999,但 tiles\.json 沒有這一號、也沒有圖片圖塊集涵蓋它/), v.errors.join('\n'));
+  v = mutate((d) => { d.maps.village.layers[0].data[6 * 24 + 4] = 99; });    // 99 在 Tiny Town 圖裡 ⇒ 不用寫 tiles.json
+  assert.ok(!hasErr(v, /gid 99/), v.errors.join('\n'));
 
   v = mutate((d) => { d.maps.village.tilesets[0].source = 'x.tsx'; delete d.maps.village.tilesets[0].name; });
   assert.ok(hasErr(v, /圖塊集 x\.tsx 是外部檔案/));

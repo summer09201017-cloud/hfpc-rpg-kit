@@ -83,6 +83,20 @@ export function objectsAt(map, x, y, filter) {
   return map.objects.filter((o) => x >= o.tx && x < o.tx + o.w && y >= o.ty && y < o.ty + o.h && (!filter || filter(o)));
 }
 
+// Tiled 把圖塊集的 image 寫成「相對於地圖檔所在資料夾」的路徑(例如地圖在 maps/village.json、圖在 assets/x.png
+// 就寫 ../assets/x.png)。這裡把它換算成相對於卡帶資料夾的路徑;反斜線也容忍。網址(http...)或 / 開頭的照原樣回傳。
+export function resolveMapPath(mapFile, rel) {
+  const r = String(rel || '').replace(/\\/g, '/');
+  if (/^([a-z]+:)?\/\//i.test(r) || r.startsWith('/') || r.startsWith('data:')) return r;
+  const parts = String(mapFile || '').replace(/\\/g, '/').split('/').slice(0, -1).filter((p) => p && p !== '.');
+  for (const p of r.split('/')) {
+    if (!p || p === '.') continue;
+    if (p === '..') { parts.pop(); continue; }
+    parts.push(p);
+  }
+  return parts.join('/');
+}
+
 // 圖片圖塊集有沒有涵蓋這個 gid(有的話回傳 {tileset, local})
 export function imageTileFor(map, gid) {
   for (const ts of map.tilesets) {

@@ -11,8 +11,8 @@
 npm install            # 只為了跑端對端測試(playwright);純玩不需要
 npm run serve          # http://127.0.0.1:8080/?game=demo
 npm run validate       # 檢查示範卡帶的資料有沒有填錯(白話中文)
-npm test               # 驗證器 + 32 項單元測試
-npm run e2e            # 真瀏覽器從開場玩到結局(37 項;截圖在 tests/.out/)
+npm test               # 驗證器 + 35 項單元測試
+npm run e2e            # 真瀏覽器從開場玩到結局(38 項;截圖在 tests/.out/)
 npm run verify         # test + e2e
 ```
 
@@ -22,7 +22,7 @@ npm run verify         # test + e2e
 
 1. 複製 `games/demo` 成 `games/<你的卡帶名>`(英數、底線、連字號)。
 2. 改 `game.json`(標題、起點、主角數值、升等)、`dialogues.json`、`quests.json`、`items.json`、`enemies.json`、`encounters.json`、`tiles.json`。
-3. 地圖用 [Tiled](https://www.mapeditor.org/) 開 `maps/*.json` 改(圖層只認 `ground` / `deco` / `collision`;物件的 Type 是 `npc` / `portal` / `item` / `zone` / `heal`;匯出時 Tile Layer Format 選 **CSV**、圖塊集要 **Embed**)。
+3. 地圖用 [Tiled](https://www.mapeditor.org/) 開 `maps/*.json` 改(圖層只認 `ground` / `deco` / `collision`;物件的 Type 是 `npc` / `portal` / `item` / `zone` / `heal`;匯出時 Tile Layer Format 選 **CSV**、圖塊集要 **Embed**)。美術圖放 `assets/`(示範卡帶用 Kenney 的 CC0 像素圖塊集,見 `assets/CREDITS.txt`);沒有圖的 gid 才寫 `tiles.json`。
 4. `node scripts/validate-game.mjs games/<卡帶名>` —— 有錯會用白話告訴你是哪個檔哪一句。
 5. 開 `?game=<卡帶名>` 玩。開場畫面如果列出錯誤,照著修就好。
 
@@ -37,7 +37,7 @@ engine/          遊戲機(改這裡 = 改所有卡帶)
   map.js         讀 Tiled JSON;dialogue.js 對話;quest.js 任務;battle.js 戰鬥與升等
   inventory.js   背包;save.js 存檔;cond.js 條件;sprites.js 畫圖;ui.js 文字層;input.js 鍵盤與虛擬按鍵
   version.js     版本與更新紀錄(頁尾顯示)
-games/demo/      示範卡帶(資料 + maps/)
+games/demo/      示範卡帶(資料 + maps/ 地圖 + assets/ 圖塊集 PNG 與 CREDITS.txt)
 scripts/         validate-game(驗證器)、serve(本機伺服器)、e2e(端對端)、make-demo-maps(示範地圖產生器,Tiled 格式活範例)
 tests/           單元測試(node --test)
 docs/            設計手冊(給填卡帶的人)
