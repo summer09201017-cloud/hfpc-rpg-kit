@@ -3,3 +3,5 @@ node_modules/
 .netlify/
 *.log
 tests/.out/
+.claude/settings.local.json
+.claude/cartridge-only
