@@ -28,7 +28,7 @@
 3. **版本頁尾**:改殼層 ⇒ `engine/version.js` CHANGELOG 最上面加一筆白話(給玩的人看,不寫檔名)+ `sw.js` CACHE 同號 +1 + CORE 清單補新檔;`tests/version.test.mjs` 會擋。
 4. **部署前 `npm run verify` 全綠**(驗證器 + 單元 + e2e)。e2e 只准用 `__rpg.teleport` 省走路,互動一律真鍵盤 / 真點擊。
 5. Playwright 釘 **1.63.0**(本機 ms-playwright 只有到 chromium-1243;升版會要下載新瀏覽器)。
-6. 部署 = Cloudflare Workers 靜態站:`npx wrangler deploy --name hfpc-rpg-kit --assets .`(`.assetsignore` 已擋 .git / node_modules / scripts / tests / docs / md)。不回 Netlify。
+6. 部署 = Cloudflare Workers 靜態站:`npx wrangler deploy --name hfpc-rpg-kit --assets . --compatibility-date 2026-11-08`(repo 沒有 wrangler 設定檔,wrangler 4.114 起不帶 `--compatibility-date` 會被擋;`.assetsignore` 已擋 .git / node_modules / scripts / tests / docs / md / txt)。不回 Netlify。
 7. 無頭測試:移動是格子+時間 tween,dt 上限 0.1s;低 fps 也會走完,但等狀態要給大預算(記憶 headless-dt-cap)。
 
 ## game-must-haves 六件對照(本 repo 不是聖經遊戲,逐條交代)
