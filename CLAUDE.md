@@ -5,6 +5,7 @@
 
 ## 現況(2026-11-08,喬治機・Fable 5.1:v3 美術第 1 層)
 
+- **2026-11-08 喬治機・卡帶工具五支上線**:`scripts/balance.mjs`(戰鬥平衡模擬:每等級每組怪各打 n 場 → 勝率表 + 建議等級 + 要練幾場)、`ascii-map.mjs`(鍵盤文字地圖 ⇄ Tiled JSON,`--dump` 可把示範村子轉成文字版;活範例 `docs/範例-文字地圖.txt`)、`reach.mjs`(從起點 BFS 走遍地圖,人物 / 道具 / 傳送點 / 倒下點走不走得到)、`new-game.mjs`(複製 demo 開新卡帶)、`smoke.mjs`(任何卡帶的無頭冒煙,不靠劇情座標)。只動 scripts / tests / docs / README / package.json;引擎與示範卡帶沒動、沒 bump 版號、沒部署。`npm test` = 驗證器 + 49 單元(新增 balance 5、ascii-map 4、reach 3、new-game 2),e2e 仍 38。設計手冊加了「五之二」「十之二」。
 - **做了**:示範卡帶的兩張地圖換成真正的像素圖塊集 —— Kenney「Tiny Town」+「Tiny Dungeon」(CC0,`games/demo/assets/tiny-town.png`、`tiny-dungeon.png`,16×16 一格、12 欄無間距,授權寫在 `assets/CREDITS.txt`)。地圖 16px 一格、三個 embedded 圖塊集(firstgid 1 / 133 / 265 = 自繪池塘九宮格 `assets/water.png`,兩包都沒有水,照 Kenney 配色畫的)+ 一個沒圖的 `vector` 圖塊集(firstgid 274,給 tiles.json 程式畫的床)。**地圖大小、collision、物件格子座標與屬性一格不動**(scripts/e2e.mjs 用格子座標走劇情);土路加寬成 2 格、花草蘑菇都只是視覺。
 - **引擎改了三處**:① `schema.js` 把 game.json 的檔名記進 `map.file`,圖塊集的 `image`(Tiled 寫的是相對地圖檔)換算成相對卡帶資料夾的 `ts.src`(`map.js` 的 `resolveMapPath`,容忍 `..` 與反斜線);`sprites.js` 抓圖與畫圖都用 `ts.src` 當鍵(`tests/tileset-path.test.mjs`)。② `main.js` 縮放改成「每格在畫面上 44~112 css px、放大倍率取整數」,16px 圖塊在手機上一格 48px,32px 卡帶觀感大致不變。③ 圖片圖塊畫整數座標與尺寸,不會有接縫。
 - **沒做(第 2 層)**:人物走路圖、怪物圖片、戰鬥背景圖 —— 主角、NPC、怪物、地上道具仍是 `sprites.js` 程式畫的向量小人;床還是程式畫(兩包都沒有床)。第 2 層 = 人物與怪物換像素圖(Tiny Dungeon 裡有 24 個人物/怪物可用)+ 上層圖層(樹冠蓋在人物上面)。

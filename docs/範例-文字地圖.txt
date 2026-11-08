@@ -1,0 +1,41 @@
+// 用鍵盤畫地圖的範例(12×8):複製這個檔改一改,然後
+//   node scripts/ascii-map.mjs docs/範例-文字地圖.txt -o games/<卡帶>/maps/sample.json
+// 就會變成遊戲機吃的地圖。完整說明在 docs/設計手冊.md「五之二」。
+// 開頭是「//」的行是註解,不算數。
+
+name: 範例小村
+tile: 16
+
+// 圖塊集:名字、圖片(相對 maps/ 資料夾)、一列幾格x共幾列。順序要跟示範卡帶一樣,
+// 程式畫的 vector 才會排到 274 號(tiles.json 的床就是 274)。
+tileset: tiny-town ../assets/tiny-town.png 12x11
+tileset: tiny-dungeon ../assets/tiny-dungeon.png 12x11
+tileset: water ../assets/water.png 3x3
+tileset: vector - 1
+
+// 地形:符號 = 地面 [裝飾] [x]   x = 不能走;格號從 0 數
+. = tiny-town:0
+, = tiny-town:1
+T = tiny-town:0 tiny-town:28 x
+= = auto tiny-town:12
+~ = auto water:0 x
+F = tiny-town:109
+W = tiny-town:77 x
+B = tiny-town:109 vector:0 x
+
+// 物件:符號 = 類型 ["名字"] 屬性=值 … on=底下的地形符號(不寫 on 就用第一個地形)
+E = npc dialogue=elder name=村長 color=#8d6e4c face=down on=.
+b = heal "床" on=B
+z = zone encounter=field on=,
+> = portal "傳回路口" map=sample x=4 y=3 dir=down on=.
+h = item item=herb on=,
+
+map:
+TTTTTTTTTTTT
+TWWW....~~~T
+TbFF.===~~~T
+T.E..===...T
+T....===,zzT
+T.>..===hzzT
+T....===,zzT
+TTTTTTTTTTTT

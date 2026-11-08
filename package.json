@@ -9,7 +9,12 @@
     "test": "node scripts/validate-game.mjs games/demo && node --test tests/*.test.mjs",
     "e2e": "node scripts/e2e.mjs",
     "verify": "npm test && npm run e2e",
-    "serve": "node scripts/serve.mjs"
+    "serve": "node scripts/serve.mjs",
+    "balance": "node scripts/balance.mjs games/demo",
+    "map": "node scripts/ascii-map.mjs",
+    "reach": "node scripts/reach.mjs games/demo",
+    "new": "node scripts/new-game.mjs",
+    "smoke": "node scripts/smoke.mjs demo"
   },
   "devDependencies": {
     "playwright": "1.63.0"
