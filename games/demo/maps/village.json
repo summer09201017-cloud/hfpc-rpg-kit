@@ -166,6 +166,11 @@
               "name": "face",
               "type": "string",
               "value": "left"
+            },
+            {
+              "name": "sheet",
+              "type": "string",
+              "value": "assets/actors/elder.png"
             }
           ]
         },

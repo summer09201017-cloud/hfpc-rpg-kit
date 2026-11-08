@@ -20,7 +20,7 @@
     "name": "勇者", "level": 1,
     "hp": 30, "mp": 8, "atk": 7, "def": 3, "spd": 5, "gold": 20,
     "items": { "potion": 2 },
-    "look": { "color": "#3f7fd6", "hair": "#4a3020", "skin": "#f6d3b3" },
+    "look": { "color": "#3f7fd6", "hair": "#4a3020", "skin": "#f6d3b3", "sheet": "assets/actors/hero.png" },
     "skills": [
       { "id": "smash", "name": "重擊", "mp": 3, "mult": 1.8, "desc": "用力一擊,傷害 1.8 倍" }
     ]

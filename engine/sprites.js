@@ -1,5 +1,6 @@
-// 畫圖:圖塊、人物、怪物、道具、戰鬥背景。v1 全部用程式畫(零圖檔);地圖若帶圖片圖塊集就用圖片。
-// 設計者換美術:① tiles.json 改顏色與 kind ② 之後在 Tiled 用真的圖塊集圖片(引擎會優先用圖片)。
+// 畫圖:圖塊、人物、怪物、道具、戰鬥背景。v1 全部用程式畫(零圖檔);地圖若帶圖片圖塊集就用圖片;
+// v4 起人物與怪物也可以給圖(走路圖 sheet / 怪物圖 image),沒圖或抓不到就退回程式畫。
+// 設計者換美術:① tiles.json 改顏色與 kind ② 在 Tiled 用真的圖塊集圖片 ③ 人物 / 怪物給走路圖(版面慣例見 sheetFrame)。
 import { imageTileFor } from './map.js';
 
 export const TILE_KINDS = ['flat', 'grass', 'tallgrass', 'water', 'tree', 'wall', 'roof', 'floor', 'path', 'rock', 'cavefloor', 'cavewall', 'bed', 'door', 'cave', 'flower', 'fence', 'table'];
@@ -14,15 +15,45 @@ function rr(ctx, x, y, w, h, r) { ctx.beginPath(); ctx.moveTo(x + r, y); ctx.arc
 
 // 圖塊集的圖:鍵 = 相對卡帶資料夾的路徑(validateGame 算好的 ts.src;Tiled 寫的 image 是相對地圖檔的,不能直接接在 base 後面)
 export const tilesetKey = (ts) => ts.src || ts.image;
-export function loadTilesetImages(maps, base) {
+// 預載一批圖(圖塊集、走路圖、怪物圖都走這裡):keys = 相對卡帶資料夾的路徑(validateGame 收好的 imageKeys),
+// 回 { 路徑: Image }。同一張只抓一次;抓不到的鍵不會留在清單裡,畫圖時自然退回程式畫。
+export function loadImages(keys, base) {
   const out = {}; const jobs = [];
-  for (const m of Object.values(maps)) for (const ts of m.tilesets) {
-    const key = ts.image && tilesetKey(ts);
-    if (!key || out[key]) continue;
+  for (const key of keys || []) {
+    if (!key || key in out) continue;
     out[key] = null;   // 先佔位,同一張圖只抓一次
     jobs.push(new Promise((res) => { const im = new Image(); im.onload = () => { out[key] = im; res(); }; im.onerror = () => { delete out[key]; res(); }; im.src = base + key; }));
   }
   return Promise.all(jobs).then(() => out);
+}
+
+// ── 走路圖 / 怪物圖(圖片版人物)──
+// 版面慣例(寫死,不加參數):一張圖 4 欄 = 方向(0 下、1 上、2 左、3 右),每格正方形、格寬 = 圖寬 ÷ 4;
+// 一列 = 一幀,只用前 4 列(列 0 兼站立),列數不到 4 就有幾列用幾列;多出來的列(攻擊、跳、倒下…)不碰。
+// 64×112(16px 人物 7 列)、64×64(16px 怪物 4 列)、128×128(32px 卡帶自己畫的)都吃得下。純函式,不碰 canvas。
+const SHEET_COL = { down: 0, up: 1, left: 2, right: 3 };
+export function sheetFrame(img, dir = 'down', frameIndex = 0) {
+  const fw = Math.max(1, Math.floor(img.width / 4)), fh = fw;
+  const frames = Math.max(1, Math.min(4, Math.floor(img.height / fh)));
+  const col = SHEET_COL[dir] || 0;
+  const f = ((Math.floor(frameIndex) % frames) + frames) % frames;
+  return { sx: col * fw, sy: f * fh, fw, fh, frames };
+}
+// 探索畫面:把走路圖的一格畫到格子 (px, py),目的尺寸 s;座標取整、尺寸整數,像素才不糊
+export function drawSheet(ctx, img, dir, frameIndex, px, py, s) {
+  const f = sheetFrame(img, dir, frameIndex);
+  const si = Math.ceil(s);
+  ctx.drawImage(img, f.sx, f.sy, f.fw, f.fh, Math.round(px), Math.round(py), si, si);
+}
+// 怪物圖:以 (cx, cy) 為中心、整數倍放大(k = size ÷ 格寬 取整),幀用時間輪(每秒約 6 幀);受傷閃白
+export function drawEnemyImage(ctx, img, cx, cy, size, t, hurt = false, dir = 'down') {
+  const f = sheetFrame(img, dir, Math.floor(t * 6));
+  const k = Math.max(1, Math.floor(size / f.fw)), dw = f.fw * k, dh = f.fh * k;
+  const dx = Math.round(cx - dw / 2), dy = Math.round(cy - dh / 2);
+  ctx.save();
+  ctx.drawImage(img, f.sx, f.sy, f.fw, f.fh, dx, dy, dw, dh);
+  if (hurt) { ctx.globalCompositeOperation = 'source-atop'; ctx.fillStyle = 'rgba(255,255,255,0.6)'; ctx.fillRect(dx, dy, dw, dh); }
+  ctx.restore();
 }
 
 export function drawTile(ctx, entry, x, y, s, t, gx, gy, noBg = false) {
@@ -197,8 +228,8 @@ export function drawItem(ctx, def, px, py, s, t) {
   ctx.restore();
 }
 
-// 戰鬥畫面:背景 + 一排怪 + 血條
-export function drawBattleScene(ctx, W, H, enemies, t, hurtIdx, theme = 'field') {
+// 戰鬥畫面:背景 + 一排怪 + 血條。images = 預載好的圖;怪有 sprite.image 且抓得到就畫圖,否則程式畫
+export function drawBattleScene(ctx, W, H, enemies, t, hurtIdx, theme = 'field', images = {}) {
   const sky = ctx.createLinearGradient(0, 0, 0, H);
   if (theme === 'cave') { sky.addColorStop(0, '#1b1b2a'); sky.addColorStop(1, '#3a3a4a'); }
   else { sky.addColorStop(0, '#79b8ff'); sky.addColorStop(0.45, '#cfe8ff'); sky.addColorStop(0.45, '#5a9e4b'); sky.addColorStop(1, '#3f7a35'); }
@@ -207,8 +238,10 @@ export function drawBattleScene(ctx, W, H, enemies, t, hurtIdx, theme = 'field')
   const n = enemies.length, size = Math.min(W / (n + 1) * 0.9, H * 0.3);
   enemies.forEach((e, i) => {
     const cx = W * (i + 1) / (n + 1), cy = H * 0.36;
-    if (e.hp <= 0) { ctx.save(); ctx.globalAlpha = 0.25; drawEnemy(ctx, e.sprite, cx, cy, size, 0, false); ctx.restore(); return; }
-    drawEnemy(ctx, e.sprite, cx, cy, size, t, hurtIdx === i);
+    const im = e.sprite && e.sprite.image && images[e.sprite.image];
+    const paint = (tt, hurt) => (im ? drawEnemyImage(ctx, im, cx, cy, size, tt, hurt) : drawEnemy(ctx, e.sprite, cx, cy, size, tt, hurt));
+    if (e.hp <= 0) { ctx.save(); ctx.globalAlpha = 0.25; paint(0, false); ctx.restore(); return; }
+    paint(t, hurtIdx === i);
     const bw = size * 0.9, bx = cx - bw / 2, by = cy - size * 0.62;
     ctx.fillStyle = 'rgba(0,0,0,0.5)'; rr(ctx, bx - 4, by - 4, bw + 8, 22, 6); ctx.fill();
     ctx.fillStyle = '#444'; ctx.fillRect(bx, by, bw, 8);

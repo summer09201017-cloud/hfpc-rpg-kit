@@ -14,6 +14,9 @@ const isObj = (v) => v && typeof v === 'object' && !Array.isArray(v);
 const isInt = (v) => Number.isInteger(v);
 const isNum = (v) => typeof v === 'number' && Number.isFinite(v);
 const nonEmpty = (v) => typeof v === 'string' && v.trim().length > 0;
+// 走路圖 / 怪物圖的路徑:相對卡帶資料夾(例如 "assets/actors/hero.png"),不能 / 開頭、不能有 ..、不能反斜線
+const IMG_PATH_HINT = '要是相對卡帶資料夾的圖片路徑(例如 "assets/actors/hero.png"),不能用 / 開頭、不能有 ..、不能用反斜線';
+const imagePathOk = (v) => nonEmpty(v) && !v.startsWith('/') && !v.includes('\\') && !v.includes('..');
 
 export function mapFileOf(entry) { return typeof entry === 'string' ? entry : (isObj(entry) ? entry.file : null); }
 export function mapNameOf(id, entry) { return (isObj(entry) && entry.name) || id; }
@@ -22,8 +25,9 @@ export function validateGame(d) {
   const errors = [], warnings = [];
   const E = (m) => errors.push(m), W = (m) => warnings.push(m);
   const maps = {};
+  const imageKeys = new Set();   // 所有要預載的圖(圖塊集、走路圖、怪物圖),相對卡帶資料夾、去重;main.js 開場一起抓
   const g = d.game;
-  if (!isObj(g)) { E('game.json 不是 JSON 物件'); return { errors, warnings, maps }; }
+  if (!isObj(g)) { E('game.json 不是 JSON 物件'); return { errors, warnings, maps, imageKeys: [] }; }
 
   // ── 各檔案要是物件 ──
   const tables = { tiles: 'tiles.json', dialogues: 'dialogues.json', quests: 'quests.json', items: 'items.json', enemies: 'enemies.json', encounters: 'encounters.json' };
@@ -47,7 +51,7 @@ export function validateGame(d) {
     if (r.map) {
       r.map.name = mapNameOf(id, g.maps[id]); r.map.file = file;
       // 圖片圖塊集的 image 是相對於地圖檔的;換算成相對於卡帶資料夾的 src,畫圖時用 src 抓圖
-      for (const ts of r.map.tilesets) if (ts.image) ts.src = resolveMapPath(file, ts.image);
+      for (const ts of r.map.tilesets) if (ts.image) { ts.src = resolveMapPath(file, ts.image); imageKeys.add(ts.src); }
       maps[id] = r.map;
     }
   }
@@ -74,6 +78,10 @@ export function validateGame(d) {
     if (isInt(hero.hp) && hero.hp < 1) E('hero.hp 至少要 1,不然一開場就倒下');
     if (hero.level != null && (!isInt(hero.level) || hero.level < 1)) E('hero.level 要是 1 以上的整數');
     if (hero.gold != null && (!isInt(hero.gold) || hero.gold < 0)) E('hero.gold 要是 0 以上的整數');
+    if (hero.look != null) {
+      if (!isObj(hero.look)) E('game.json 的 hero.look 要是物件:{"color":"#3f7fd6","hair":"#4a3020","skin":"#f6d3b3"},可以再加 "sheet"(走路圖)');
+      else if (hero.look.sheet != null) { if (imagePathOk(hero.look.sheet)) imageKeys.add(hero.look.sheet); else E(`game.json 的 hero.look.sheet ${IMG_PATH_HINT}`); }
+    }
     if (hero.items != null) {
       if (!isObj(hero.items)) E('hero.items 要寫成 {"道具id": 數量}');
       else for (const [it, q] of Object.entries(hero.items)) { if (!items[it]) E(`hero.items 的道具 ${it} 不在 items.json`); if (!isInt(q) || q < 1) E(`hero.items 的 ${it} 數量要是 1 以上的整數`); }
@@ -127,8 +135,11 @@ export function validateGame(d) {
         if (!isObj(dr) || !isNum(dr.chance) || dr.chance < 0 || dr.chance > 1) E(`怪物 ${id} 的第 ${i + 1} 個掉落物 chance 要在 0~1 之間`);
       });
     }
-    if (!isObj(en.sprite) || !ENEMY_SHAPES.includes(en.sprite.shape)) E(`怪物 ${id} 的 sprite.shape 只能是 ${ENEMY_SHAPES.join(' / ')}`);
-    else if (!nonEmpty(en.sprite.color)) E(`怪物 ${id} 的 sprite.color 缺(例如 "#6cc24a")`);
+    if (!isObj(en.sprite) || !ENEMY_SHAPES.includes(en.sprite.shape)) E(`怪物 ${id} 的 sprite.shape 只能是 ${ENEMY_SHAPES.join(' / ')}(有 image 也要填,圖抓不到時用它程式畫)`);
+    else {
+      if (!nonEmpty(en.sprite.color)) E(`怪物 ${id} 的 sprite.color 缺(例如 "#6cc24a")`);
+      if (en.sprite.image != null) { if (imagePathOk(en.sprite.image)) imageKeys.add(en.sprite.image); else E(`怪物 ${id} 的 sprite.image ${IMG_PATH_HINT};沒有圖就整個欄位不要寫`); }
+    }
   }
   for (const [id, enc] of Object.entries(encounters)) {
     if (!isObj(enc)) { E(`遭遇表 ${id} 要是物件`); continue; }
@@ -226,6 +237,9 @@ export function validateGame(d) {
       if (o.type === 'npc') {
         if (!dialogues[p.dialogue]) E(`${label} 的 dialogue「${p.dialogue || '(沒填)'}」不是存在的對話 id`); else dialogueRefs.add(p.dialogue);
         if (tileBlocked(m, o.tx, o.ty)) W(`${label} 站在不能走的格子上,玩家可能走不到他面前`);
+        for (const k of ['sheet', 'image']) if (p[k] != null) { if (imagePathOk(p[k])) imageKeys.add(p[k]); else E(`${label} 的 ${k} ${IMG_PATH_HINT}`); }
+        if (p.sheet != null && p.image != null) W(`${label} 同時有 sheet(走路圖)與 image(怪物圖),會用 image`);
+        if (p.face != null && !DIRS.includes(p.face)) E(`${label} 的 face 只能是 ${DIRS.join(' / ')}`);
       } else if (o.type === 'portal') {
         if (!mapIds.includes(p.map)) E(`${label} 的目標地圖 ${p.map || '(沒填)'} 不在 game.json 的 maps`);
         else if (!isInt(p.x) || !isInt(p.y)) E(`${label} 要填目標格子 x、y(整數)`);
@@ -251,7 +265,7 @@ export function validateGame(d) {
   for (const en of Object.values(enemies)) if (isObj(en) && Array.isArray(en.drops)) for (const dr of en.drops) if (isObj(dr)) givenItems.add(dr.item);
   for (const m of Object.values(maps)) for (const o of m.objects) if (o.type === 'item') givenItems.add(o.props.item);
   for (const id of Object.keys(items)) if (!givenItems.has(id)) W(`道具 ${id} 沒有任何地方拿得到(不在起始道具、對話、任務獎勵、掉落、地圖上)`);
-  return { errors, warnings, maps };
+  return { errors, warnings, maps, imageKeys: [...imageKeys] };
 }
 
 export { parseCond };

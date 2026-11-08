@@ -9,4 +9,12 @@ water.png         自繪(本 repo),池塘岸邊九宮格 3 × 3 = 9 格、16×16
       http://creativecommons.org/publicdomain/zero/1.0/
 來源:https://kenney.nl/assets/tiny-town 、 https://kenney.nl/assets/tiny-dungeon
 
-人物與怪物仍是引擎用程式畫的(engine/sprites.js),不在這兩張圖裡。
+actors/hero.png   主角走路圖:pixel-boy + AAA《Ninja Adventure - Asset Pack》的 Actor/Character/Boy/SpriteSheet.png(原檔改名,內容一個位元都沒改)
+actors/elder.png  村長走路圖:同一包的 Actor/Character/OldMan3/SpriteSheet.png(原檔改名,內容沒改)
+                  兩張都是 64×112、16×16 一格、4 欄(下/上/左/右)× 7 列(前 4 列走路,列 0 兼站立;列 4~6 攻擊/跳/倒下,引擎不用)
+
+作者:pixel-boy(https://pixel-boy.itch.io)與 AAA(https://www.instagram.com/challenger.aaa/)
+授權:CC0 1.0(素材包內 LICENSE.txt 與 README.md 寫明可免費商用、不強制署名)
+來源:https://pixel-boy.itch.io/ninja-adventure-asset-pack
+
+其他村民(艾拉、鐵匠、守衛)與 5 種怪物仍是引擎用程式畫的(engine/sprites.js),還沒換圖;想換就照 docs/設計手冊.md「九之二」從同一包挑一張複製進來。

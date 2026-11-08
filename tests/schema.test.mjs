@@ -84,4 +84,55 @@ test('壞掉的 JSON / 讀不到的檔會變成白話錯誤,不會炸', () => {
   const v2 = validateGame({ game: { id: 'x', title: 't', maps: { a: 'maps/a.json' } }, maps: {} });
   assert.ok(hasErr(v2, /地圖 a 的檔案讀不到/));
   assert.ok(hasErr(v2, /tiles\.json 要是 JSON 物件/));
+  assert.deepEqual(v2.imageKeys, []);
+});
+
+const elderOf = (d) => d.maps.village.layers[3].objects.find((o) => o.name === '村長');
+
+test('突變:走路圖 / 怪物圖的路徑填錯要被抓到(主角 sheet、NPC sheet / image、怪物 sprite.image)', () => {
+  let v = mutate((d) => { d.game.hero.look.sheet = 123; });
+  assert.ok(hasErr(v, /game\.json 的 hero\.look\.sheet 要是相對卡帶資料夾的圖片路徑/), v.errors.join('\n'));
+  v = mutate((d) => { d.game.hero.look.sheet = '../secret/hero.png'; });
+  assert.ok(hasErr(v, /hero\.look\.sheet .*不能有 \.\./), v.errors.join('\n'));
+  v = mutate((d) => { d.game.hero.look.sheet = '/assets/actors/hero.png'; });
+  assert.ok(hasErr(v, /hero\.look\.sheet .*不能用 \/ 開頭/), v.errors.join('\n'));
+  v = mutate((d) => { d.game.hero.look.sheet = '   '; });
+  assert.ok(hasErr(v, /hero\.look\.sheet/));
+  v = mutate((d) => { d.game.hero.look = 'blue'; });
+  assert.ok(hasErr(v, /game\.json 的 hero\.look 要是物件/), v.errors.join('\n'));
+  v = mutate((d) => { delete d.game.hero.look; });
+  assert.deepEqual(v.errors, [], 'look 整個不填也可以(程式畫)');
+
+  v = mutate((d) => { elderOf(d).properties.find((p) => p.name === 'sheet').value = 'assets\\actors\\elder.png'; });
+  assert.ok(hasErr(v, /物件「村長」.*的 sheet 要是相對卡帶資料夾的圖片路徑/), v.errors.join('\n'));
+  v = mutate((d) => { elderOf(d).properties.find((p) => p.name === 'sheet').value = 7; });
+  assert.ok(hasErr(v, /物件「村長」.*的 sheet /));
+  v = mutate((d) => { elderOf(d).properties.push({ name: 'image', type: 'string', value: '' }); });
+  assert.ok(hasErr(v, /物件「村長」.*的 image 要是相對卡帶資料夾的圖片路徑/), v.errors.join('\n'));
+  v = mutate((d) => { elderOf(d).properties.find((p) => p.name === 'face').value = 'north'; });
+  assert.ok(hasErr(v, /物件「村長」.*的 face 只能是/), v.errors.join('\n'));
+
+  v = mutate((d) => { d.enemies.blob.sprite.image = ''; });
+  assert.ok(hasErr(v, /怪物 blob 的 sprite\.image 要是相對卡帶資料夾的圖片路徑/), v.errors.join('\n'));
+  v = mutate((d) => { d.enemies.blob.sprite.image = 'assets/../x.png'; });
+  assert.ok(hasErr(v, /怪物 blob 的 sprite\.image/));
+  v = mutate((d) => { d.enemies.blob.sprite = { image: 'assets/monsters/blob.png' }; });
+  assert.ok(hasErr(v, /怪物 blob 的 sprite\.shape 只能是.*有 image 也要填/), v.errors.join('\n'));
+});
+
+test('imageKeys:圖塊集 + 主角走路圖 + NPC 走路圖 + 怪物圖,去重;填對的不報錯,同時有 sheet 與 image 只提醒', () => {
+  const v = validateGame(demo);
+  assert.deepEqual(v.errors, []);
+  assert.deepEqual([...v.imageKeys].sort(), ['assets/actors/elder.png', 'assets/actors/hero.png', 'assets/tiny-dungeon.png', 'assets/tiny-town.png', 'assets/water.png']);
+  assert.equal(new Set(v.imageKeys).size, v.imageKeys.length);
+
+  const v2 = mutate((d) => {
+    d.enemies.blob.sprite.image = 'assets/monsters/blob.png';
+    d.enemies.wolf.sprite.image = 'assets/monsters/blob.png';   // 兩隻怪共用一張圖 ⇒ 只收一次
+    elderOf(d).properties.push({ name: 'image', type: 'string', value: 'assets/monsters/boss.png' });
+  });
+  assert.deepEqual(v2.errors, [], v2.errors.join('\n'));
+  assert.ok(v2.warnings.some((w) => /物件「村長」.*同時有 sheet(.*)與 image/.test(w)), v2.warnings.join('\n'));
+  assert.equal(v2.imageKeys.filter((k) => k === 'assets/monsters/blob.png').length, 1);
+  assert.ok(v2.imageKeys.includes('assets/monsters/boss.png'));
 });

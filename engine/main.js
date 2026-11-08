@@ -12,7 +12,7 @@ import { Battle, makeHero, heroFromSave, gainXp, xpToNext } from './battle.js';
 import { createSaveStore } from './save.js';
 import { evalCond } from './cond.js';
 import { tileBlocked, objectsAt } from './map.js';
-import { drawMap, drawChar, drawEnemy, drawItem, drawBattleScene, loadTilesetImages } from './sprites.js';
+import { drawMap, drawChar, drawEnemy, drawItem, drawBattleScene, drawSheet, drawEnemyImage, loadImages } from './sprites.js';
 import { APP_VERSION } from './version.js';
 
 const DELTA = { up: [0, -1], down: [0, 1], left: [-1, 0], right: [1, 0] };
@@ -23,7 +23,7 @@ export async function boot(opts) {
   const data = await loadGame(opts.gameId);
   const v = data.loadErrors.length ? { errors: data.loadErrors, warnings: [], maps: {} } : validateGame(data);
   if (v.errors.length) { ui.errors(v.errors, v.warnings); return { ok: false, errors: v.errors, warnings: v.warnings, mode: 'error' }; }
-  const game = new Game({ ...opts, ui, data, maps: v.maps, warnings: v.warnings });
+  const game = new Game({ ...opts, ui, data, maps: v.maps, imageKeys: v.imageKeys, warnings: v.warnings });
   await game.init();
   game.showTitle();
   return game;
@@ -32,7 +32,7 @@ export async function boot(opts) {
 export class Game {
   constructor(o) {
     this.ok = true;
-    this.data = o.data; this.g = o.data.game; this.maps = o.maps; this.warnings = o.warnings || [];
+    this.data = o.data; this.g = o.data.game; this.maps = o.maps; this.imageKeys = o.imageKeys || []; this.warnings = o.warnings || [];
     this.defs = { items: o.data.items, enemies: o.data.enemies, encounters: o.data.encounters, quests: o.data.quests, dialogues: o.data.dialogues };
     this.palette = o.data.tiles;
     this.ui = o.ui; this.canvas = o.canvas; this.win = o.win || window;
@@ -48,7 +48,7 @@ export class Game {
     };
   }
   async init() {
-    this.images = await loadTilesetImages(this.maps, this.data.base);
+    this.images = await loadImages(this.imageKeys, this.data.base);   // 圖塊集 + 走路圖 + 怪物圖一起預載;抓不到的鍵不會在裡面
     this.resize(); this.win.addEventListener('resize', () => this.resize());
     this._last = performance.now();
     const tick = (now) => { const dt = Math.min(0.1, (now - this._last) / 1000); this._last = now; this.update(dt); this.draw(); this.win.requestAnimationFrame(tick); };
@@ -306,7 +306,7 @@ export class Game {
     const W = this.canvas.width, H = this.canvas.height;
     ctx.imageSmoothingEnabled = false;
     if (this.mode === 'title' || this.mode === 'ending' || !this.hero) { ctx.fillStyle = '#1b2838'; ctx.fillRect(0, 0, W, H); return; }
-    if (this.mode === 'battle' && this.battle) { drawBattleScene(ctx, W, H, this.battle.enemies, this.t, this.hurtIdx, this.battleTheme); return; }
+    if (this.mode === 'battle' && this.battle) { drawBattleScene(ctx, W, H, this.battle.enemies, this.t, this.hurtIdx, this.battleTheme, this.images); return; }
     const map = this.map, tw = map.tw;
     // 每格在畫面上至少 MIN_CELL、最多 MAX_CELL css 像素(不管卡帶的圖塊是 16 還是 32px),畫面寬約放 13 格;
     // 放大倍率取整數,像素圖塊才不會糊、不會有接縫
@@ -327,14 +327,25 @@ export class Game {
       const px = o.tx * s - cam.x, py = o.ty * s - cam.y;
       if (px < -s || py < -s || px > W || py > H) continue;
       if (o.type === 'item') drawItem(ctx, this.defs.items[o.props.item], px, py, s, this.t);
-      else if (o.type === 'npc' && o.props.shape) drawEnemy(ctx, { shape: o.props.shape, color: o.props.color || '#888' }, px + s / 2, py + s / 2, s, this.t, false);
-      else if (o.type === 'npc') drawChar(ctx, { color: o.props.color || '#8d6e4c', hair: o.props.hair, skin: o.props.skin }, px, py, s, o.props.face || 'down', 0);
+      else if (o.type === 'npc') this.drawNpc(ctx, o, px, py, s);
     }
-    const frame = this.move ? this.move.t : 0;
-    drawChar(ctx, this.g.hero.look || { color: '#3f7fd6' }, hx * s - cam.x, hy * s - cam.y, s, this.pos.dir, frame);
+    // 主角:有走路圖就畫圖(走路時一格 4 幀輪、站著列 0),沒有(或抓不到)就程式畫
+    const look = this.g.hero.look || { color: '#3f7fd6' }, heroSheet = look.sheet && this.images[look.sheet];
+    const hpx = hx * s - cam.x, hpy = hy * s - cam.y;
+    if (heroSheet) drawSheet(ctx, heroSheet, this.pos.dir, this.move ? Math.floor(this.move.t * 4) : 0, hpx, hpy, s);
+    else drawChar(ctx, look, hpx, hpy, s, this.pos.dir, this.move ? this.move.t : 0);
     // 面前的 NPC 給一個小提示
     const [dx, dy] = DELTA[this.pos.dir];
     const front = objectsAt(map, this.pos.x + dx, this.pos.y + dy, (o) => (o.type === 'npc' || o.type === 'heal') && this.visible(o))[0];
     if (front && !this.move) { ctx.fillStyle = 'rgba(255,255,255,0.9)'; ctx.font = `${Math.round(s * 0.4)}px system-ui, sans-serif`; ctx.textAlign = 'center'; ctx.fillText('!', front.tx * s - cam.x + s / 2, front.ty * s - cam.y - s * 0.1 + Math.sin(this.t * 4) * s * 0.05); }
+  }
+  // NPC 的畫法,優先序:image(怪物圖,欄照 face、幀用時間輪)→ sheet(走路圖,站著用列 0)→ shape(程式畫的怪)→ 程式畫的小人;
+  // 圖抓不到(images 裡沒有)就往下一個退
+  drawNpc(ctx, o, px, py, s) {
+    const p = o.props, im = p.image && this.images[p.image], sh = p.sheet && this.images[p.sheet];
+    if (im) drawEnemyImage(ctx, im, px + s / 2, py + s / 2, s, this.t, false, p.face || 'down');
+    else if (sh) drawSheet(ctx, sh, p.face || 'down', 0, px, py, s);
+    else if (p.shape) drawEnemy(ctx, { shape: p.shape, color: p.color || '#888' }, px + s / 2, py + s / 2, s, this.t, false);
+    else drawChar(ctx, { color: p.color || '#8d6e4c', hair: p.hair, skin: p.skin }, px, py, s, p.face || 'down', 0);
   }
 }

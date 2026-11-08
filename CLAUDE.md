@@ -3,13 +3,14 @@
 **定位**:家庭作品(憫安=兒子要用它設計遊戲),不是聖經遊戲;**遊戲機(engine/)是爸爸+Claude 的,卡帶(games/)是兒子的**。
 分工契約:兒子只動 `games/<名>/` 與 `assets/`,不動 `engine/`;他要的新功能開卡片、照 card-tier-rules 分層,做進遊戲機所有卡帶都能用。
 
-## 現況(2026-11-08,喬治機・Fable 5.1:v3 美術第 1 層)
+## 現況(2026-11-08,喬治機・Fable 5.1:v4 美術第 2 層)
 
+- **v4 美術第 2 層(2026-11-08 喬治機,背景助手做的)**:引擎支援**走路圖與怪物圖**。資料契約三個可選欄位(值都是相對卡帶資料夾的圖片路徑,不能 / 開頭、不能有 ..、不能反斜線):① game.json `hero.look.sheet` ② Tiled NPC 屬性 `sheet`(走路圖,方向沿用 `face`,站著列 0)與 `image`(怪物圖,給站在地圖上的頭目;有 image 就不用 shape)③ enemies.json `sprite.image`(shape / color 照舊必填當退路)。版面慣例寫死在 `sprites.js` 的 `sheetFrame`:4 欄 = 方向(0 下 1 上 2 左 3 右)、格寬 = 圖寬 ÷ 4、只用前 min(4, 列數) 列當走路幀(列 0 兼站立);64×112、64×64、128×128 都吃。`schema.js` 驗證時把圖塊集 src + 所有 sheet / image 收成去重的 `imageKeys`,`main.js` 開場用 `loadImages` 一起預載;抓不到就退回程式畫。戰鬥畫面 `drawBattleScene` 多收 `images`,有圖的怪用 `drawEnemyImage`(固定正面欄、每秒 6 幀、整數倍放大、受傷閃白照舊)。示範卡帶:主角 = Ninja Adventure(pixel-boy + AAA,CC0)的 Boy、村長 = OldMan3,原檔複製到 `games/demo/assets/actors/hero.png`、`elder.png`,來源寫在 `assets/CREDITS.txt`;**怪物圖片支援做好了但 demo 的 5 種怪沒換**。單元測試 +8(`tests/sheet.test.mjs` 6、schema 突變 2)⇒ `npm test` = 驗證器 + 57 單元;e2e 仍 38。**沒做**:其他 NPC(艾拉、鐵匠、守衛)與 5 種怪換圖、上層圖層(樹冠蓋在人物上面)、戰鬥背景圖、床的圖。
 - **2026-11-08 喬治機・卡帶工具五支上線**:`scripts/balance.mjs`(戰鬥平衡模擬:每等級每組怪各打 n 場 → 勝率表 + 建議等級 + 要練幾場)、`ascii-map.mjs`(鍵盤文字地圖 ⇄ Tiled JSON,`--dump` 可把示範村子轉成文字版;活範例 `docs/範例-文字地圖.txt`)、`reach.mjs`(從起點 BFS 走遍地圖,人物 / 道具 / 傳送點 / 倒下點走不走得到)、`new-game.mjs`(複製 demo 開新卡帶)、`smoke.mjs`(任何卡帶的無頭冒煙,不靠劇情座標)。只動 scripts / tests / docs / README / package.json;引擎與示範卡帶沒動、沒 bump 版號、沒部署。`npm test` = 驗證器 + 49 單元(新增 balance 5、ascii-map 4、reach 3、new-game 2),e2e 仍 38。設計手冊加了「五之二」「十之二」。
 - **做了**:示範卡帶的兩張地圖換成真正的像素圖塊集 —— Kenney「Tiny Town」+「Tiny Dungeon」(CC0,`games/demo/assets/tiny-town.png`、`tiny-dungeon.png`,16×16 一格、12 欄無間距,授權寫在 `assets/CREDITS.txt`)。地圖 16px 一格、三個 embedded 圖塊集(firstgid 1 / 133 / 265 = 自繪池塘九宮格 `assets/water.png`,兩包都沒有水,照 Kenney 配色畫的)+ 一個沒圖的 `vector` 圖塊集(firstgid 274,給 tiles.json 程式畫的床)。**地圖大小、collision、物件格子座標與屬性一格不動**(scripts/e2e.mjs 用格子座標走劇情);土路加寬成 2 格、花草蘑菇都只是視覺。
 - **引擎改了三處**:① `schema.js` 把 game.json 的檔名記進 `map.file`,圖塊集的 `image`(Tiled 寫的是相對地圖檔)換算成相對卡帶資料夾的 `ts.src`(`map.js` 的 `resolveMapPath`,容忍 `..` 與反斜線);`sprites.js` 抓圖與畫圖都用 `ts.src` 當鍵(`tests/tileset-path.test.mjs`)。② `main.js` 縮放改成「每格在畫面上 44~112 css px、放大倍率取整數」,16px 圖塊在手機上一格 48px,32px 卡帶觀感大致不變。③ 圖片圖塊畫整數座標與尺寸,不會有接縫。
-- **沒做(第 2 層)**:人物走路圖、怪物圖片、戰鬥背景圖 —— 主角、NPC、怪物、地上道具仍是 `sprites.js` 程式畫的向量小人;床還是程式畫(兩包都沒有床)。第 2 層 = 人物與怪物換像素圖(Tiny Dungeon 裡有 24 個人物/怪物可用)+ 上層圖層(樹冠蓋在人物上面)。
-- 驗收:`npm test`(驗證器 + 35 單元)、`npm run e2e` 38 項全綠;對照截圖 `tests/.out/before-*.png` vs `tests/.out/*.png`。
+- **第 2 層現況(v4 做了一半)**:主角與村長已換像素走路圖(見最上面那條);其他 NPC、怪物、地上道具仍是 `sprites.js` 程式畫的向量小人;床還是程式畫(兩包都沒有床)。剩下的 = 其他 NPC 與 5 種怪換圖(Ninja Adventure 的 Actor/Monster 有 64×64 怪物圖,`sprite.image` 填上就會用)+ 上層圖層(樹冠蓋在人物上面)+ 戰鬥背景圖。
+- 驗收:`npm test`(驗證器 + 57 單元)、`npm run e2e` 38 項全綠;對照截圖 `tests/.out/before-*.png` vs `tests/.out/*.png`;v4 的主角與村長截圖 `tests/.out/v4-hero-elder.png`。
 - 示範地圖的格號對照表在 `scripts/make-demo-maps.mjs` 最上面;要改地圖直接用 Tiled 開 `games/demo/maps/*.json`。
 
 ## 現況(2026-11-08,HFP 機・Fable 5.1・1108-0555-RPG-家裡 場:v1 首發)
@@ -21,6 +22,8 @@
 - 美術 = 程式畫的佔位(tiles.json 調色 + sprites.js 的 kind / shape);Tiled 帶圖片圖塊集時引擎優先用圖片。`.claude/no-design-needed`:正式美術開工前再出 Claude Design 設計稿。(v3 起地圖已換像素圖,見上一段)
 - ⚠ 規格:使用者 1108 說「直接做」,沒走 Codex 產規格(141 號提示詞已存 skills repo `references/spec-prompts/`,輪值仍是 Codex)。
 - 📋 待辦:部署後進帳本(sites.json、作品集憫安合輯、play-stats NAMES 登記 `rpgkit-demo`);兒子開第二張卡帶;v2 卡片池見 README「刻意不做」。
+
+跨專案資產:卡帶工具的 skill 與指令見 hfpc-claude-skills 的 hfpc-games 包(rpg-cartridge-kit skill 與 /rpg-new /rpg-map /rpg-balance /rpg-ship)。
 
 ## 鐵則
 

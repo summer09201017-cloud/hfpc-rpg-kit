@@ -2,7 +2,8 @@
 // v1(2026-11-08):首發
 // v2(2026-11-08):手機方向鍵點一下也走一格
 // v3(2026-11-08):示範卡帶換 Kenney 像素圖塊集(games/demo/assets/)、16px 圖塊縮放
-const CACHE = 'rpgkit-v3';
+// v4(2026-11-08):走路圖與怪物圖支援;示範卡帶主角與村長換 Ninja Adventure 像素小人(games/demo/assets/actors/)
+const CACHE = 'rpgkit-v4';
 const CORE = [
   './', './index.html', './manifest.json', './icon.svg',
   './engine/main.js', './engine/loader.js', './engine/schema.js', './engine/map.js', './engine/cond.js', './engine/rng.js',
@@ -12,6 +13,7 @@ const CORE = [
   './games/demo/items.json', './games/demo/enemies.json', './games/demo/encounters.json',
   './games/demo/maps/village.json', './games/demo/maps/cave.json',
   './games/demo/assets/tiny-town.png', './games/demo/assets/tiny-dungeon.png', './games/demo/assets/water.png',
+  './games/demo/assets/actors/hero.png', './games/demo/assets/actors/elder.png',
 ];
 self.addEventListener('install', (e) => {
   self.skipWaiting();
